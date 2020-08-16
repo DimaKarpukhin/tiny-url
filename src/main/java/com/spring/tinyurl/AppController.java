@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -27,53 +29,60 @@ import java.util.Random;
 public class AppController {
 
     public static final int MAX_RETRIES = 3;
+    private static final int TINY_LENGTH = 7;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private MongoTemplate m_MongoTemplate;
 
     @Autowired
-    RedisUtil redisRepository;
+    private RedisUtil m_RedisRepository;
 
     @Autowired
-    ObjectMapper om;
+    private ObjectMapper m_ObjectMapper;
 
     @Value("${app.baseurl}")
     String baseurl;
 
-    private static final int TINY_LENGTH = 7;
-    Random random = new Random();
+    Random m_Random = new Random();
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public String sayHello() {
+    public String SayHello()
+    {
         return "Hello!";
     }
 
 
     @RequestMapping(value = "/app/user", method = RequestMethod.GET)
-    public List<User> getAllUsers() throws JsonProcessingException {
-        return mongoTemplate.findAll(User.class, "users");
+    public List<User> GetAllUsers() throws JsonProcessingException
+    {
+        return m_MongoTemplate.findAll(User.class, "users");
     }
 
     @RequestMapping(value = "/app/user", method = RequestMethod.POST)
-    public String createUser(@RequestBody User user) {
-        mongoTemplate.insert(user,"users");;
+    public String CreateUser(@RequestBody User user)
+    {
+        m_MongoTemplate.insert(user,"users");
+
         return "OK";
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public String createNewTiny(@RequestBody NewTinyRequest request) throws JsonProcessingException {
+    public String CreateNewTinyUrl(@RequestBody NewTinyRequest request) throws JsonProcessingException
+    {
 
         System.out.println("Debug1");
         request.setLongUrl(addHttpsIfNotPresent(request.getLongUrl()));
-        for (int i = 0; i < MAX_RETRIES; i++) {
+        for (int i = 0; i < MAX_RETRIES; i++)
+        {
            String candidate = generateTinyUrl();
 
-           if (redisRepository.set(candidate, om.writeValueAsString(request)))
+           if (m_RedisRepository.set(candidate, m_ObjectMapper.writeValueAsString(request)))
            {
-               if (request.getUser() != null) {
+               if (request.getUser() != null)
+               {
                    Query query = Query.query(Criteria.where("_id").is(request.getUser()));
                    Update update = new Update().set("shorts."  + candidate, new HashMap() );
-                   mongoTemplate.updateFirst(query, update, "users");
+                   m_MongoTemplate.updateFirst(query, update, "users");
                }
                return baseurl + candidate + "/";
            }
@@ -83,25 +92,35 @@ public class AppController {
     }
 
     @RequestMapping(value = "/{tiny}/", method = RequestMethod.GET)
-    public ModelAndView redirect(@PathVariable String tiny) throws JsonProcessingException {
+    public ModelAndView Redirect(@PathVariable String tiny) throws JsonProcessingException
+    {
         System.out.println("Debug2");
-        NewTinyRequest redirectTo = om.readValue(redisRepository.get(tiny).toString(), NewTinyRequest.class);
+        NewTinyRequest redirectTo = m_ObjectMapper.readValue(m_RedisRepository.get(tiny).toString(), NewTinyRequest.class);
+
         if (redirectTo.getUser() != null)
         {
             Query query = Query.query(Criteria.where("_id").is(redirectTo.getUser()));
             Update update = new Update().inc("shorts."  + tiny + ".clicks." + getCurMonth(), 1 );
-            mongoTemplate.updateFirst(query, update, "users");
+            m_MongoTemplate.updateFirst(query, update, "users");
         }
         System.out.println(redirectTo);
+
         return new ModelAndView("redirect:" + redirectTo.getLongUrl());
     }
 
-    private String getCurMonth() {
-        return "202008";
+    private String getCurMonth()
+    {
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/yyyy");
+        Date date = new Date();
+
+        System.out.println(">>>>>>>" + formatter.format(date));
+
+        return formatter.format(date);
     }
 
 
-    private String addHttpsIfNotPresent(@RequestParam String longUrl) {
+    private String addHttpsIfNotPresent(@RequestParam String longUrl)
+    {
         if (!longUrl.startsWith("http"))
         {
             longUrl = "https://" + longUrl;
@@ -110,11 +129,12 @@ public class AppController {
         return longUrl;
     }
 
-    private String generateTinyUrl() {
+    private String generateTinyUrl()
+    {
         String charpool = "ABCDEFHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         String res = "";
         for (int i = 0; i < TINY_LENGTH; i++) {
-            res += charpool.charAt(random.nextInt(charpool.length()));
+            res += charpool.charAt(m_Random.nextInt(charpool.length()));
         }
 
         return res;
