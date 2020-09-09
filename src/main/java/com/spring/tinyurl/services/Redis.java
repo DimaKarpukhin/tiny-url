@@ -1,4 +1,4 @@
-package com.spring.tinyurl.util;
+package com.spring.tinyurl.services;
 
 
 import java.util.List;
@@ -14,7 +14,7 @@ import org.springframework.util.CollectionUtils;
 
 @Lazy
 @Component
-public class RedisUtil{
+public class Redis {
 
     @Autowired
     private RedisTemplate redisTemplate;

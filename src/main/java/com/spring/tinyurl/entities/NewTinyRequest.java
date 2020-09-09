@@ -1,16 +1,17 @@
-package com.spring.tinyurl.json;
+package com.spring.tinyurl.entities;
 
 import java.util.Objects;
 
-public class NewTinyRequest {
+public class NewTinyRequest
+{
     private String longUrl;
-    private String user;
+    private String userId;
 
     @Override
     public String toString() {
         return "NewTinyRequest{" +
                 "longUrl='" + longUrl + '\'' +
-                ", user='" + user + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 
@@ -20,13 +21,13 @@ public class NewTinyRequest {
         if (o == null || getClass() != o.getClass()) return false;
         NewTinyRequest that = (NewTinyRequest) o;
         return Objects.equals(longUrl, that.longUrl) &&
-                Objects.equals(user, that.user);
+                Objects.equals(userId, that.userId);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(longUrl, user);
+        return Objects.hash(longUrl, userId);
     }
 
     public String getLongUrl() {
@@ -34,15 +35,11 @@ public class NewTinyRequest {
         return longUrl;
     }
 
-    public String getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
     public void setLongUrl(String longUrl) {
         this.longUrl = longUrl;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
     }
 }

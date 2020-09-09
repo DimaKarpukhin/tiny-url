@@ -1,11 +1,11 @@
-package com.spring.tinyurl.json;
+package com.spring.tinyurl.entities;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class ShortUrl {
-    Map<String, Integer> clicks = new HashMap<>();
+    private Map<String, Integer> clicks = new HashMap<>();
 
     public Map<String, Integer> getClicks() {
         return clicks;
