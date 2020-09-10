@@ -57,7 +57,7 @@ public class AppController {
     public String createUser(@RequestParam String id, @RequestParam String name) {
         User user = new User(id,name);
         mongoTemplate.insert(user,"users");
-        //cassandra.createUsersClicksTable();
+        cassandra.createUsersClicksTable();
         cassandra.insertUserClicks(id, name);
 
         return "OK";

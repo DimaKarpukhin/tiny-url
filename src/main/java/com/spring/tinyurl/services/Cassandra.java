@@ -94,7 +94,6 @@ public class Cassandra {
                         .build());
     }
 
-    @PostConstruct
     public void createUsersClicksTable() {
         cassandraSession.execute(
                 SchemaBuilder.createTable(
