@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.dropTable;
 
-//@Component
+@Component
 public class Cassandra {
     private static final String USERS_CLICKS_TABLE = "users_clicks";
     private static final String ID_COLUMN = "id";
