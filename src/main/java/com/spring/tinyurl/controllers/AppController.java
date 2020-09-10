@@ -1,5 +1,4 @@
 package com.spring.tinyurl.controllers;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.tinyurl.entities.NewTinyRequest;
@@ -7,6 +6,7 @@ import com.spring.tinyurl.entities.User;
 import com.spring.tinyurl.entities.UserClicks;
 import com.spring.tinyurl.services.Cassandra;
 import com.spring.tinyurl.services.Redis;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
+import static com.datastax.oss.driver.api.querybuilder.select.Selector.column;
+import static reactor.core.publisher.Mono.first;
 
 @RestController
 @RequestMapping(value = "")
@@ -85,15 +85,15 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/{tiny}/", method = RequestMethod.GET)
-    public ModelAndView redirect(@PathVariable String tiny) throws JsonProcessingException {
+    @RequestMapping(value = "/{tinyUri}/", method = RequestMethod.GET)
+    public ModelAndView redirect(@PathVariable String tinyUri) throws JsonProcessingException {
         NewTinyRequest tinyRequest = objectMapper.readValue(
-                redis.get(tiny).toString(), NewTinyRequest.class);
+                redis.get(tinyUri).toString(), NewTinyRequest.class);
         String userId = tinyRequest.getUserId();
         if ( userId != null) {
             incrementMongoField(userId, "allUrlClicks");
             incrementMongoField(userId,
-                    "shorts."  + tiny + ".clicks." + getCurMonth());
+                    "shorts."  + tinyUri + ".clicks." + getCurMonth());
             cassandra.incrementUserClicks(userId);
         }
 
