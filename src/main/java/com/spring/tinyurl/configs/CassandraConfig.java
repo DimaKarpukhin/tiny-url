@@ -15,10 +15,9 @@ public class CassandraConfig {
     private static final String KEYSPACE = "codding";
 
     @Bean("cassandraSession")
-    public CqlSession getSession () throws URISyntaxException {
+    public CqlSession getSession () {
         return CqlSession.builder()
-                .withCloudSecureConnectBundle(Paths.get(
-                        getClass().getResource(SECURE_CONNECT).toURI()))
+                .withCloudSecureConnectBundle(getClass().getResourceAsStream(SECURE_CONNECT))
                 .withAuthCredentials(USERNAME, PASSWORD)
                 .withKeyspace(KEYSPACE)
                 .build();

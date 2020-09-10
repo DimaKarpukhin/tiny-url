@@ -44,8 +44,8 @@ public class AppController {
     private Random random = new Random();
 
     @RequestMapping(value = "/clicks", method = RequestMethod.GET)
-    public List<UserClicks> getClicksSummery() {
-        return cassandra.getClicksSummery();
+    public List<UserClicks> getClicksSummary() {
+        return cassandra.getClicksSummary();
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)

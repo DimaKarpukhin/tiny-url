@@ -62,7 +62,7 @@ public class Cassandra {
                         .build());
     }
 
-    public List<UserClicks> getClicksSummery() {
+    public List<UserClicks> getClicksSummary() {
         return cassandraSession.execute(
                 selectFrom(USERS_CLICKS_TABLE).all()
                         .build())
