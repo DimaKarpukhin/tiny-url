@@ -85,15 +85,15 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/{tinyUri}/", method = RequestMethod.GET)
-    public ModelAndView redirect(@PathVariable String tinyUri) throws JsonProcessingException {
+    @RequestMapping(value = "/{tiny}/", method = RequestMethod.GET)
+    public ModelAndView redirect(@PathVariable String tiny) throws JsonProcessingException {
         NewTinyRequest tinyRequest = objectMapper.readValue(
-                redis.get(tinyUri).toString(), NewTinyRequest.class);
+                redis.get(tiny).toString(), NewTinyRequest.class);
         String userId = tinyRequest.getUserId();
         if ( userId != null) {
             incrementMongoField(userId, "allUrlClicks");
             incrementMongoField(userId,
-                    "shorts."  + tinyUri + ".clicks." + getCurMonth());
+                    "shorts."  + tiny + ".clicks." + getCurMonth());
             cassandra.incrementUserClicks(userId);
         }
 
