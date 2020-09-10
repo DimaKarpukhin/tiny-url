@@ -22,7 +22,7 @@ public class Cassandra {
     private static final String NAME_COLUMN = "name";
     private static final String CLICKS_COLUMN = "clicks";
 
-    //@Autowired
+    @Autowired
     private CqlSession cassandraSession;
 
     public  void insertUserClicks(UserClicks user) {
@@ -94,6 +94,7 @@ public class Cassandra {
                         .build());
     }
 
+    @PostConstruct
     public void createUsersClicksTable() {
         cassandraSession.execute(
                 SchemaBuilder.createTable(
