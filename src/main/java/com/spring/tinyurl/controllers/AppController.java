@@ -33,7 +33,7 @@ public class AppController {
     private MongoTemplate mongoTemplate;
     @Autowired
     private Redis redis;
-    @Autowired
+    //@Autowired
     private Cassandra cassandra;
     @Autowired
     private ObjectMapper objectMapper;

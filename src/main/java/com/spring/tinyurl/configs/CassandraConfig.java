@@ -7,14 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
-@Configuration
+//@Configuration
 public class CassandraConfig {
     private static final String SECURE_CONNECT = "/secure-connect-tinyurl.zip";
     private static final String USERNAME = "dimaDk";
     private static final String PASSWORD = "tinyurl2516";
     private static final String KEYSPACE = "codding";
 
-    @Bean("cassandraSession")
+   // @Bean("cassandraSession")
     public CqlSession getSession () throws URISyntaxException {
         return CqlSession.builder()
                 .withCloudSecureConnectBundle(Paths.get(

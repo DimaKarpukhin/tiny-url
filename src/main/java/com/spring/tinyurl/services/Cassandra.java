@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.dropTable;
 
-@Component
+//@Component
 public class Cassandra {
     private static final String USERS_CLICKS_TABLE = "users_clicks";
     private static final String ID_COLUMN = "id";
     private static final String NAME_COLUMN = "name";
     private static final String CLICKS_COLUMN = "clicks";
 
-    @Autowired
+    //@Autowired
     private CqlSession cassandraSession;
 
     public  void insertUserClicks(UserClicks user) {
