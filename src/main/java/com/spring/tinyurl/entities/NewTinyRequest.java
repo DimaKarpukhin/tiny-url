@@ -7,6 +7,11 @@ public class NewTinyRequest
     private String longUrl;
     private String userId;
 
+    public NewTinyRequest(String longUrl, String userId) {
+        this.longUrl = longUrl;
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "NewTinyRequest{" +

@@ -7,9 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Holds information for an account.
- */
 @Document(collection = "users")
 public class User {
 

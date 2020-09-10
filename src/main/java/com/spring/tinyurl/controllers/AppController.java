@@ -1,16 +1,12 @@
 package com.spring.tinyurl.controllers;
-import com.datastax.oss.driver.api.core.type.DataTypes;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.Block;
-import com.mongodb.client.model.*;
 import com.spring.tinyurl.entities.NewTinyRequest;
 import com.spring.tinyurl.entities.User;
 import com.spring.tinyurl.entities.UserClicks;
 import com.spring.tinyurl.services.Cassandra;
 import com.spring.tinyurl.services.Redis;
-
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -20,21 +16,12 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.PostConstruct;
-
-import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.*;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 
-import static com.datastax.oss.driver.api.querybuilder.select.Selector.column;
-import static reactor.core.publisher.Mono.first;
-
-/**
- * Spring Boot Hello案例
- * <p>
- * Created by bysocket on 26/09/2017.
- */
 @RestController
 @RequestMapping(value = "")
 public class AppController {
@@ -48,7 +35,6 @@ public class AppController {
     private Redis redis;
     @Autowired
     private Cassandra cassandra;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -99,19 +85,25 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/{tiny}/", method = RequestMethod.GET)
-    public ModelAndView redirect(@PathVariable String tiny) throws JsonProcessingException {
+    @RequestMapping(value = "/{tinyUri}/", method = RequestMethod.GET)
+    public ModelAndView redirect(@PathVariable String tinyUri) throws JsonProcessingException {
         NewTinyRequest tinyRequest = objectMapper.readValue(
-                redis.get(tiny).toString(), NewTinyRequest.class);
+                redis.get(tinyUri).toString(), NewTinyRequest.class);
         String userId = tinyRequest.getUserId();
         if ( userId != null) {
-            Query query = Query.query(Criteria.where("_id").is(userId));
-            Update update = new Update().inc("shorts."  + tiny + ".clicks." + getCurMonth(), 1 );
-            mongoTemplate.updateFirst(query, update, "users");
+            incrementMongoField(userId, "allUrlClicks");
+            incrementMongoField(userId,
+                    "shorts."  + tinyUri + ".clicks." + getCurMonth());
             cassandra.incrementUserClicks(userId);
         }
 
         return new ModelAndView("redirect:" + tinyRequest.getLongUrl());
+    }
+
+    private void incrementMongoField(String id, String key){
+        Query query = Query.query(Criteria.where("_id").is(id));
+        Update update = new Update().inc(key, 1);
+        mongoTemplate.updateFirst(query, update, "users");
     }
 
     private String getCurMonth() {

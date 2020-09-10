@@ -1,13 +1,10 @@
 package com.spring.tinyurl.entities;
 
 import com.datastax.oss.driver.api.core.cql.Row;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Objects;
 
 public class UserClicks {
-
-    private ObjectMapper objectMapper;
     private String id;
     private String name;
     private int clicks;

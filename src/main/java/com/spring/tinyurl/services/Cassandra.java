@@ -1,33 +1,18 @@
 package com.spring.tinyurl.services;
 
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.type.DataTypes;
-import com.datastax.oss.driver.api.querybuilder.*;
 import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
-import com.datastax.oss.driver.api.querybuilder.insert.Insert;
-import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
-import com.datastax.oss.driver.api.querybuilder.schema.Drop;
-import com.datastax.oss.driver.api.querybuilder.select.Select;
-import com.datastax.oss.driver.api.querybuilder.update.Update;
-import com.spring.tinyurl.configs.CassandraConfig;
 import com.spring.tinyurl.entities.UserClicks;
-import org.apache.commons.collections.bag.SynchronizedSortedBag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
-
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.selectFrom;
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.dropTable;
 
 @Component
@@ -66,13 +51,13 @@ public class Cassandra {
         incrementUserClicks(userId, 1);
     }
 
-    public void incrementUserClicks(String userId, int increaseVal) {
+    public void incrementUserClicks(String userId, int incVal) {
         int userClicks = getUserClicks(userId).getClicks();
         cassandraSession.execute(
                 update(USERS_CLICKS_TABLE)
                         .setColumn(CLICKS_COLUMN, add(
                                 literal(userClicks),
-                                literal(increaseVal)))
+                                literal(incVal)))
                         .whereColumn(ID_COLUMN).isEqualTo(literal(userId))
                         .build());
     }
@@ -111,9 +96,6 @@ public class Cassandra {
 
     @PostConstruct
     public void createUsersClicksTable() {
-        //        cassandraSession.execute("create table IF NOT EXISTS " +
-        //                "clicks.user_clicks( username text, tiny text, url text, click_time timestamp, PRIMARY KEY((username, tiny),click_time) )  WITH CLUSTERING ORDER BY (click_time DESC)");
-
         cassandraSession.execute(
                 SchemaBuilder.createTable(
                         "codding", USERS_CLICKS_TABLE).ifNotExists()
