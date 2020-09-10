@@ -43,12 +43,12 @@ public class AppController {
 
     private Random random = new Random();
 
-    @RequestMapping(value = "/clicks", method = RequestMethod.GET)
+    @RequestMapping(value = "/clicksSummary", method = RequestMethod.GET)
     public List<UserClicks> getClicksSummary() {
         return cassandra.getClicksSummary();
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    @RequestMapping(value = "/allUsers", method = RequestMethod.GET)
     public List<User> getAllUsers() {
         return mongoTemplate.findAll(User.class, "users");
     }
