@@ -1,4 +1,4 @@
-# tinyUrl
+# tiny-url
 Server rest api for shortening web url's. Implemented with mongodb, redis and cassandra.
 
 Test api on: https://dima-tiny-url.herokuapp.com/swagger-ui.html
